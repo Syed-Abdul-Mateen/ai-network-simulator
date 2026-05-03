@@ -232,6 +232,24 @@ No additional setup is required. All data directories and ML model files are cre
 
 ---
 
+## Quick Start
+
+After completing the installation steps above, run these two commands to see the full project in action:
+
+```bash
+# Step 1: Run the attack simulation (trains ML model automatically on first run)
+python scripts/run_simulation.py
+
+# Step 2: Launch the web dashboard
+python scripts/start_dashboard.py
+```
+
+Then open **http://localhost:5000** in your browser to view the interactive dashboard.
+
+The simulation generates a detailed PDF report at `data/reports/final_report.pdf` -- open it to see the full analysis.
+
+---
+
 ## Usage
 
 ### Run the Full Simulation
