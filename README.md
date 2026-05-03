@@ -55,32 +55,32 @@ After the attack simulation completes, the system parses the generated logs, ext
                              |
               +--------------+--------------+
               |                             |
-   +----------v----------+     +-----------v-----------+
+   +----------v-----------+     +-----------v------------+
    |   Attack Engine      |     |   AI Analysis          |
    |                      |     |                        |
    |  Scanner             |     |  LogParser             |
    |  Enumerator          |     |  FeatureExtractor      |
-   |  CredentialAttacker   |     |  RootCauseAnalyzer     |
-   |  PrivilegeEscalator   |     |  AttackPathBuilder     |
+   |  CredentialAttacker  |     |  RootCauseAnalyzer     |
+   |  PrivilegeEscalator  |     |  AttackPathBuilder     |
    |  LateralMover        |     |                        |
-   |  MitreMapper         |     |  RandomForestClassifier |
+   |  MitreMapper         |     |  RandomForestClassifier|
    +----------+-----------+     +-----------+------------+
               |                             |
               +-------------+---------------+
                             |
               +-------------v--------------+
-              |     Response Engine         |
+              |    Response Engine         |
               |  Recommendations           |
               +-------------+--------------+
                             |
               +-------------v--------------+
-              |     Visualization           |
-              |  AttackGraph (PNG)          |
+              |     Visualization          |
+              |  AttackGraph (PNG)         |
               |  ReportGenerator (PDF)     |
               +-------------+--------------+
                             |
               +-------------v--------------+
-              |     Web Dashboard (Flask)   |
+              |     Web Dashboard (Flask)  |
               |  Real-time event log       |
               |  Interactive attack graph  |
               |  Root cause analysis bars  |
