@@ -155,11 +155,24 @@ def main():
         logger.info(f"MITRE ID for lateral movement: {tid}")
     
     # Step 6: Visualization
+    graph_output = config['visualization']['graph_output']
     viz = AttackGraph()
-    viz.plot(graph, config['visualization']['graph_output'])
+    viz.plot(graph, graph_output)
+    
+    # Collect MITRE mappings
+    mitre_map = {}
+    for step in movements:
+        tid = mapper.map_step("Lateral Movement")
+        mitre_map[step] = tid
     
     report_gen = ReportGenerator()
-    report_gen.generate(root_causes, recs, config['visualization']['report_output'])
+    report_gen.generate(
+        root_causes, recs, config['visualization']['report_output'],
+        events=events,
+        graph_image_path=graph_output,
+        mitre_mappings=mitre_map,
+        movements=movements
+    )
     
     logger.info("Simulation completed. Check data/graphs/ and data/reports/ for output.")
     print("\n" + "="*60)
