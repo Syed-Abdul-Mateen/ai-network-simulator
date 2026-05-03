@@ -1,0 +1,11 @@
+flask
+pandas
+numpy
+scikit-learn
+networkx
+matplotlib
+reportlab
+pyyaml
+requests
+sqlalchemy
+python-dateutil 

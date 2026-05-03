@@ -1,0 +1,41 @@
+# Project configuration
+project:
+  name: "Cyber Attack Path Analyzer"
+  version: "1.0.0"
+
+# Logging
+logging:
+  level: "INFO"
+  file: "data/logs/simulation.log"
+
+# Database
+database:
+  path: "data/events.db"
+
+# Attack engine
+attack_engine:
+  threads: 4
+  timeout: 30
+  mitre_url: "https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json"
+
+# AI analysis
+ai_analysis:
+  model_path: "ai_analysis/models/rca_model.pkl"
+  feature_columns:
+    - "timestamp"
+    - "source_ip"
+    - "dest_ip"
+    - "event_type"
+    - "status"
+    - "message"
+
+# Visualization
+visualization:
+  graph_output: "data/graphs/attack_path.png"
+  report_output: "data/reports/final_report.pdf"
+
+# Web dashboard
+dashboard:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false

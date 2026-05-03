@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Data files (generated)
+data/events.db
+data/graphs/*.png
+data/logs/*.log
+data/reports/*.pdf
+
+# Model files (generated)
+ai_analysis/models/rca_model.pkl
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

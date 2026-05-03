@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Cyber Attack Path Analyzer - Real-time network threat monitoring dashboard">
+    <title>Cyber Attack Path Analyzer | AI Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo-area">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="rgba(0,255,225,0.08)" />
+                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <div>
+                    <h1>Attack Path Analyzer</h1>
+                    <span class="header-subtitle">AI-Powered Threat Intelligence</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="runSimulationBtn" class="btn-primary" title="Run Simulation">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Run Simulation
+                </button>
+                <div class="status-badge" id="status-badge">
+                    <span class="status-dot"></span>
+                    <span>System Active</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-blue">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="stat-events">--</span>
+                    <span class="stat-label">Total Events</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-red">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="stat-threats">--</span>
+                    <span class="stat-label">Threats Found</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-green">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="stat-model">--</span>
+                    <span class="stat-label">ML Model</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-cyan">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="stat-time">--</span>
+                    <span class="stat-label">Last Scan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+
+            <!-- Events Card -->
+            <div class="card card-events" id="events-card">
+                <div class="card-header">
+                    <h2>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+                        Security Event Log
+                    </h2>
+                    <button id="refreshEventsBtn" class="btn-icon" title="Refresh Events">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table class="event-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Severity</th>
+                                <th>Source IP</th>
+                                <th>Target IP</th>
+                                <th>Event Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-body">
+                            <tr><td colspan="5" class="loading-cell">
+                                <div class="loader"></div>
+                                Fetching events...
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Attack Graph Card -->
+            <div class="card card-graph" id="graph-card">
+                <div class="card-header">
+                    <h2>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="18" r="3"></circle>
+                            <circle cx="6" cy="6" r="3"></circle>
+                            <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+                            <line x1="6" y1="9" x2="6" y2="21"></line>
+                        </svg>
+                        Attack Path Topology
+                    </h2>
+                    <span class="graph-timestamp">Updated: <span id="graph-timestamp">--</span></span>
+                </div>
+                <div class="graph-container" id="graph-container">
+                    <canvas id="graph-canvas"></canvas>
+                    <div class="graph-placeholder" id="graph-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+                            <circle cx="18" cy="18" r="3"></circle>
+                            <circle cx="6" cy="6" r="3"></circle>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <line x1="6" y1="9" x2="6" y2="15"></line>
+                            <path d="M9 6h6a3 3 0 0 1 3 3v6"></path>
+                        </svg>
+                        <span>Run simulation to view attack topology</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations Card -->
+            <div class="card card-recommendations" id="recs-card">
+                <div class="card-header">
+                    <h2>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        Remediation Actions
+                    </h2>
+                    <button id="refreshRecsBtn" class="btn-icon" title="Refresh Recommendations">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="recommendations-list" id="recommendations-list">
+                    <div class="loading-spinner">
+                        <div class="loader"></div>
+                        Loading...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Root Causes Card -->
+            <div class="card card-causes" id="causes-card">
+                <div class="card-header">
+                    <h2>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        Root Cause Analysis
+                    </h2>
+                </div>
+                <div class="causes-container" id="causes-container">
+                    <div class="loading-spinner">
+                        <div class="loader"></div>
+                        Analyzing...
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info Card -->
+            <div class="card card-info" id="info-card">
+                <div class="card-header">
+                    <h2>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        System Overview
+                    </h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Status</span>
+                        <span class="info-value status-yes" id="sys-status">Running</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Log File</span>
+                        <span class="info-value" id="log-file">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ML Model</span>
+                        <span class="info-value" id="model-status">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Last Refresh</span>
+                        <span class="info-value" id="last-update">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <span>Cyber Attack Path Analyzer v2.0</span>
+            <span>Powered by ML &bull; NetworkX &bull; Flask</span>
+        </footer>
+    </div>
+
+    <script>
+        // ──────────────────────────
+        // Utility helpers
+        // ──────────────────────────
+        function fmt(iso) {
+            if (!iso) return '--';
+            const d = new Date(iso);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) +
+                ' ' + d.toLocaleDateString();
+        }
+
+        function shortTime() {
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ──────────────────────────
+        // Load Events
+        // ──────────────────────────
+        async function loadEvents() {
+            const tbody = document.getElementById('events-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="loading-cell"><div class="loader"></div> Fetching...</td></tr>';
+            try {
+                const res = await fetch('/api/events');
+                if (!res.ok) throw new Error('Network error');
+                const events = await res.json();
+                if (events.error) throw new Error(events.error);
+                document.getElementById('stat-events').textContent = events.length;
+                tbody.innerHTML = '';
+                if (events.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">No events yet &mdash; run the simulation first.</td></tr>';
+                } else {
+                    let threats = 0;
+                    events.forEach((ev, idx) => {
+                        if (ev.level === 'ERROR' || ev.level === 'WARNING') threats++;
+                        const row = document.createElement('tr');
+                        row.style.animationDelay = `${idx * 30}ms`;
+                        row.classList.add('fade-in-row');
+                        row.innerHTML = `
+                            <td class="mono">${fmt(ev.timestamp)}</td>
+                            <td><span class="level-badge level-${(ev.level || 'info').toLowerCase()}">${ev.level || 'INFO'}</span></td>
+                            <td class="mono">${ev.source_ip || '—'}</td>
+                            <td class="mono">${ev.dest_ip || '—'}</td>
+                            <td class="message-cell">${ev.message || ''}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    document.getElementById('stat-threats').textContent = threats;
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" class="error-cell">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        // ──────────────────────────
+        // Load Recommendations
+        // ──────────────────────────
+        async function loadRecommendations() {
+            const container = document.getElementById('recommendations-list');
+            container.innerHTML = '<div class="loading-spinner"><div class="loader"></div> Loading...</div>';
+            try {
+                const res = await fetch('/api/recommendations');
+                if (!res.ok) throw new Error('Network error');
+                const recs = await res.json();
+                if (recs.error) throw new Error(recs.error);
+                container.innerHTML = '';
+                if (recs.length === 0) {
+                    container.innerHTML = '<div class="empty-message">No recommendations yet.</div>';
+                } else {
+                    const ul = document.createElement('ul');
+                    recs.forEach((rec, i) => {
+                        const li = document.createElement('li');
+                        li.style.animationDelay = `${i * 80}ms`;
+                        li.classList.add('fade-in-row');
+                        li.textContent = rec;
+                        ul.appendChild(li);
+                    });
+                    container.appendChild(ul);
+                }
+            } catch (err) {
+                container.innerHTML = `<div class="error-message">Error: ${err.message}</div>`;
+            }
+        }
+
+        // ──────────────────────────
+        // Load Graph Data & Draw on Canvas
+        // ──────────────────────────
+        async function loadGraph() {
+            try {
+                const res = await fetch('/api/graph');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.error || !data.nodes || data.nodes.length === 0) return;
+
+                document.getElementById('graph-placeholder').style.display = 'none';
+                const canvas = document.getElementById('graph-canvas');
+                canvas.style.display = 'block';
+                const ctx = canvas.getContext('2d');
+                const container = document.getElementById('graph-container');
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+
+                const W = canvas.width, H = canvas.height;
+                ctx.clearRect(0, 0, W, H);
+
+                // Position nodes in a circle
+                const nodes = data.nodes;
+                const nodePos = {};
+                const cx = W / 2, cy = H / 2;
+                const radius = Math.min(W, H) * 0.35;
+                nodes.forEach((n, i) => {
+                    const angle = (2 * Math.PI * i) / nodes.length - Math.PI / 2;
+                    nodePos[n] = { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+                });
+
+                // Draw edges
+                data.edges.forEach(e => {
+                    const s = nodePos[e.source], t = nodePos[e.target];
+                    if (!s || !t) return;
+                    ctx.beginPath();
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(t.x, t.y);
+                    ctx.strokeStyle = 'rgba(0,255,225,0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Arrowhead
+                    const angle = Math.atan2(t.y - s.y, t.x - s.x);
+                    const hx = t.x - 20 * Math.cos(angle), hy = t.y - 20 * Math.sin(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(hx, hy);
+                    ctx.lineTo(hx - 10 * Math.cos(angle - 0.4), hy - 10 * Math.sin(angle - 0.4));
+                    ctx.lineTo(hx - 10 * Math.cos(angle + 0.4), hy - 10 * Math.sin(angle + 0.4));
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(0,255,225,0.6)';
+                    ctx.fill();
+                });
+
+                // Draw nodes
+                nodes.forEach(n => {
+                    const p = nodePos[n];
+                    // Outer glow
+                    const grad = ctx.createRadialGradient(p.x, p.y, 4, p.x, p.y, 20);
+                    grad.addColorStop(0, 'rgba(0,255,225,0.4)');
+                    grad.addColorStop(1, 'rgba(0,255,225,0)');
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 20, 0, Math.PI * 2);
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+
+                    // Inner circle
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = '#00ffe1';
+                    ctx.fill();
+                    ctx.strokeStyle = '#0a0c10';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Label
+                    ctx.font = '500 12px "JetBrains Mono", monospace';
+                    ctx.fillStyle = '#e6edf3';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(n, p.x, p.y + 26);
+                });
+
+                document.getElementById('graph-timestamp').textContent = shortTime();
+            } catch (err) {
+                console.error('Graph error:', err);
+            }
+        }
+
+        // ──────────────────────────
+        // Load Root Causes (visualized as bars)
+        // ──────────────────────────
+        async function loadCauses() {
+            const container = document.getElementById('causes-container');
+            try {
+                const res = await fetch('/api/recommendations');
+                if (!res.ok) return;
+
+                // We re-use the recommendations endpoint but also call events to derive causes
+                const evRes = await fetch('/api/events');
+                const events = await evRes.json();
+
+                // Build a quick cause breakdown from events
+                const levels = { ERROR: 0, WARNING: 0, INFO: 0 };
+                if (Array.isArray(events)) {
+                    events.forEach(e => {
+                        const lvl = e.level || 'INFO';
+                        if (lvl in levels) levels[lvl]++;
+                        else levels[lvl] = 1;
+                    });
+                }
+                const total = Math.max(Object.values(levels).reduce((a, b) => a + b, 0), 1);
+
+                container.innerHTML = '';
+                const colors = { ERROR: '#ff3366', WARNING: '#ffcc00', INFO: '#3399ff' };
+                Object.entries(levels).forEach(([level, count]) => {
+                    const pct = ((count / total) * 100).toFixed(1);
+                    const bar = document.createElement('div');
+                    bar.className = 'cause-bar';
+                    bar.innerHTML = `
+                        <div class="cause-label">
+                            <span class="cause-dot" style="background:${colors[level] || '#888'}"></span>
+                            ${level}
+                        </div>
+                        <div class="cause-track">
+                            <div class="cause-fill" style="width:${pct}%; background:${colors[level] || '#888'}"></div>
+                        </div>
+                        <span class="cause-pct">${count} (${pct}%)</span>
+                    `;
+                    container.appendChild(bar);
+                });
+            } catch (err) {
+                container.innerHTML = `<div class="error-message">Error: ${err.message}</div>`;
+            }
+        }
+
+        // ──────────────────────────
+        // Load Status
+        // ──────────────────────────
+        async function loadStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const status = await res.json();
+                document.getElementById('log-file').textContent = status.log_file || '--';
+                const mElem = document.getElementById('model-status');
+                const mStat = document.getElementById('stat-model');
+                if (status.model_loaded) {
+                    mElem.textContent = 'Loaded';
+                    mElem.className = 'info-value status-yes';
+                    mStat.textContent = 'Active';
+                } else {
+                    mElem.textContent = 'Not loaded';
+                    mElem.className = 'info-value status-no';
+                    mStat.textContent = 'Inactive';
+                }
+                document.getElementById('last-update').textContent = shortTime();
+                document.getElementById('stat-time').textContent = shortTime();
+            } catch (err) {
+                console.error('Status error:', err);
+            }
+        }
+
+        // ──────────────────────────
+        // Simulation Trigger
+        // ──────────────────────────
+        document.getElementById('runSimulationBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('runSimulationBtn');
+            btn.disabled = true;
+            btn.textContent = 'Running...';
+            try {
+                const res = await fetch('/api/run-simulation', { method: 'POST' });
+                const result = await res.json();
+                if (result.error) alert('Simulation error: ' + result.error);
+                else refreshAll();
+            } catch (err) {
+                alert('Could not reach simulation endpoint. Run manually:\npython scripts/run_simulation.py');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Run Simulation`;
+            }
+        });
+
+        // ──────────────────────────
+        // Refresh All
+        // ──────────────────────────
+        function refreshAll() {
+            loadEvents();
+            loadRecommendations();
+            loadGraph();
+            loadCauses();
+            loadStatus();
+        }
+
+        // Auto-refresh every 30s
+        let refreshInterval;
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(refreshAll, 30000);
+        }
+
+        // Wire up manual refresh buttons
+        document.getElementById('refreshEventsBtn').addEventListener('click', loadEvents);
+        document.getElementById('refreshRecsBtn').addEventListener('click', () => {
+            loadRecommendations();
+            loadCauses();
+        });
+
+        // Initial boot
+        refreshAll();
+        startAutoRefresh();
+    </script>
+</body>
+
+</html>
